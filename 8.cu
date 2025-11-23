@@ -135,7 +135,7 @@ int main(int argc, char **argv) {
     unsigned int i;
     double cpu_time, gpu_time;
     struct timespec start, stop;
-     GpuTimer timer;
+    
   
 	printf("Enter filter radius : ");
 	scanf("%d", &filter_radius);
@@ -217,6 +217,9 @@ int main(int argc, char **argv) {
     dim3 blockDim(32, 32);
     dim3 gridDim((imageW + blockDim.x - 1) / blockDim.x,(imageH + blockDim.y - 1) / blockDim.y);
     //start time
+    float gpu_time_ms;
+    {
+    GpuTimer timer;
     timer.Start();
     convRowGPU<<<gridDim,blockDim>>>(d_Buffer,d_Input, d_Filter, imageW, imageH, filter_radius);
     cudaDeviceSynchronize();
@@ -224,8 +227,8 @@ int main(int argc, char **argv) {
     cudaDeviceSynchronize();
     //stop
     timer.Stop();
-
-    float gpu_time_ms = timer.Elapsed();
+    gpu_time_ms = timer.Elapsed();
+    }
 
     printf("GPU execution time: %lf ms\n", gpu_time_ms);
 
